@@ -39,12 +39,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # core apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # custom apps
+    'account',
+    'recortes',
 ]
 
 MIDDLEWARE = [
@@ -82,8 +86,11 @@ WSGI_APPLICATION = 'tikal_challenge.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': env.db(),
+    'recortes_db': env.db('RECORTES_DATABASE_URL')
 }
+
+DATABASE_ROUTERS = ['recortes.routers.RecortesRouter']
 
 
 # Password validation
@@ -123,3 +130,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Custom User Model
+
+AUTH_USER_MODEL = 'account.User'
