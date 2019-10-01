@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:9.4
+    env_file: env/postgres.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    env_file: env/redis.env
+  tikal-challenge:
+    image: tikal-challenge
+    build: .
+    env_file: env/django.env
+    command: ["./run_app.sh"]
+    volumes:
+      - .:/code
+    ports:
+      - 8001:8001
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
