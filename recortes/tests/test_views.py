@@ -1,11 +1,11 @@
 from datetime import datetime
-from django.urls import reverse
+from django.db.models import Q
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from recortes.models import RecortesRecorte
 from recortes.serializers import RecortesSerializer
-
 
 
 class RecortesAPITests(APITestCase):
@@ -14,26 +14,33 @@ class RecortesAPITests(APITestCase):
     def setUp(self):
         get_user_model().objects \
             .create_user(
-                'spiderman', 
+                'spiderman',
                 'spider@man.com',
                 'spiderman'
             )
-        
+
 
         numbers_recortes = (30, 40, 50)
         for number in numbers_recortes:
+            recorte_text = "Content:\n"
+            n = 0
             for i in range(0, number):
+                next_mult_ten = i + (10 - i % 10)
+                if next_mult_ten > n:
+                    n = next_mult_ten
+                    recorte_text += "{}\n".format(str(n)*3)
+
                 RecortesRecorte.objects.create(
                     data_criacao=datetime.now(),
                     numeracao_unica='{}{}'.format(number, number),
-                    recorte='{} registers of this'.format(number),
+                    recorte=recorte_text,
                     data_publicacao=datetime.now(),
                     codigo_diario='COD{}'.format(number),
                     novo_recorte=True,
                 )
 
     def test_api(self):
-        
+
         url = reverse('recortes')
         client = APIClient()
 
@@ -45,7 +52,7 @@ class RecortesAPITests(APITestCase):
             status.HTTP_403_FORBIDDEN,
             "Asserting user can't request without authentication"
         )
-        
+
         # testing parameters
 
         client.login(username='spiderman', password='spiderman')
@@ -69,7 +76,7 @@ class RecortesAPITests(APITestCase):
 
         recortes = RecortesRecorte.objects.filter(numeracao_unica='4040') \
                     .order_by('id')
-        
+
         params = {'nup': '4040'}
         serializer = RecortesSerializer(recortes, many=True)
         response = client.get(url, params)
@@ -104,4 +111,39 @@ class RecortesAPITests(APITestCase):
             response.data,
             serializer.data,
             "Asserting data when search by \"nup\" with \"size\" and \"offset\" parameters"
+        )
+
+
+        # tests for "q" param
+
+        recortes = RecortesRecorte.objects.all()
+
+        params = {'q': '404040'}
+        serializer = RecortesSerializer(recortes.filter(recorte__contains='404040'), many=True)
+        response = client.get(url, params)
+        self.assertEqual(
+            response.data,
+            serializer.data,
+            "Asserting data when search by \"q\" parameter"
+        )
+
+        params = {'q': '404040-101010'}
+        filter_q_recortes = recortes.filter(Q(recorte__contains='404040') &
+                            Q(recorte__contains='101010'))
+
+        serializer = RecortesSerializer(filter_q_recortes, many=True)
+        response = client.get(url, params)
+        self.assertEqual(
+            response.data,
+            serializer.data,
+            "Asserting data when search by multiple \"q\" parameters"
+        )
+
+        params['nup'] = '5050'
+        serializer = RecortesSerializer(filter_q_recortes.filter(nup='5050'), many=True)
+        response = client.get(url, params)
+        self.assertEqual(
+            response.data,
+            serializer.data,
+            "Asserting data when search by multiple \"q\" and \"nup\" parameters"
         )
