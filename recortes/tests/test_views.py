@@ -140,7 +140,7 @@ class RecortesAPITests(APITestCase):
         )
 
         params['nup'] = '5050'
-        serializer = RecortesSerializer(filter_q_recortes.filter(nup='5050'), many=True)
+        serializer = RecortesSerializer(filter_q_recortes.filter(numeracao_unica='5050'), many=True)
         response = client.get(url, params)
         self.assertEqual(
             response.data,

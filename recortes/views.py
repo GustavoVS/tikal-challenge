@@ -1,5 +1,8 @@
 from django.http import Http404
+from django.db.models import Q
+from functools import reduce
 import re
+import operator
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -24,6 +27,10 @@ class RecortesAPIView(ListAPIView):
 
         if nup:
             qs = qs.filter(numeracao_unica=nup)
+
+        if q:
+            qs = qs.filter(reduce(operator.and_, (Q(recorte__contains = rec) \
+                for rec in q.split('-'))))
 
         if not qs:
             raise Http404()
