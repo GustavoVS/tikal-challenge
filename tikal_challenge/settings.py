@@ -90,6 +90,9 @@ DATABASES = {
     'recortes_db': env.db('RECORTES_DATABASE_URL')
 }
 
+DATABASES['recortes_db']['TEST'] = env.db()
+del DATABASES['recortes_db']['TEST']['NAME']
+
 DATABASE_ROUTERS = ['recortes.routers.RecortesRouter']
 
 

@@ -143,7 +143,7 @@ class RecortesRecorte(models.Model):
     nup_invalido_msg = models.CharField(max_length=120, blank=True, null=True)
 
     class Meta:
-        managed = False
+        # managed = False
         db_table = 'recortes_recorte'
 
 
