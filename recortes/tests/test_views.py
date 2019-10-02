@@ -37,12 +37,12 @@ class RecortesAPITests(APITestCase):
         url = reverse('recortes')
         client = APIClient()
 
-        # testing the request can't complete without authentication
+        # testing the request can't complete request without authentication
         params = {'test': 'test'}
-        response = client.get(url, kwargs=params)
+        response = client.get(url, params)
         self.assertEqual(
             response.status_code,
-            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
             "Asserting user can't request without authentication"
         )
         
@@ -50,41 +50,17 @@ class RecortesAPITests(APITestCase):
 
         client.login(username='spiderman', password='spiderman')
 
-        response = client.get(url, kwargs=params)
+        response = client.get(url, params)
         self.assertEqual(
             response.status_code,
             status.HTTP_400_BAD_REQUEST,
             "Asserting error when request without an obligatory parameter"
         )
 
-        params = {'nup': 'nup'}
-        response = client.get(url, kwargs=params)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-            "Asserting can request with \"nup\" parameter"
-        )
-
-        params = {'q': 'query'}
-        response = client.get(url, kwargs=params)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-            "Asserting can request with \"q\" parameter"
-        )
-
-        params = {'q': 'query'}
-        response = client.get(url, kwargs=params)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-            "Asserting can request with \"q\" parameter"
-        )
-
         # tests for "nup" parameter
 
         params = {'nup': '2020'}
-        response = client.get(url, kwargs=params)
+        response = client.get(url, params)
         self.assertEqual(
             response.status_code,
             status.HTTP_404_NOT_FOUND,
@@ -95,8 +71,8 @@ class RecortesAPITests(APITestCase):
                     .order_by('id')
         
         params = {'nup': '4040'}
-        serializer = RecortesSerializer(recortes)
-        response = client.get(url, kwargs=params)
+        serializer = RecortesSerializer(recortes, many=True)
+        response = client.get(url, params)
         self.assertEqual(
             response.data,
             serializer.data,
@@ -104,8 +80,8 @@ class RecortesAPITests(APITestCase):
         )
 
         params = {'nup': '4040', 'size': '10'}
-        serializer = RecortesSerializer(recortes[:10])
-        response = client.get(url, kwargs=params)
+        serializer = RecortesSerializer(recortes[:10], many=True)
+        response = client.get(url, params)
         self.assertEqual(
             response.data,
             serializer.data,
@@ -113,8 +89,8 @@ class RecortesAPITests(APITestCase):
         )
 
         params = {'nup': '4040', 'offset': '15'}
-        serializer = RecortesSerializer(recortes[15:])
-        response = client.get(url, kwargs=params)
+        serializer = RecortesSerializer(recortes[15:], many=True)
+        response = client.get(url, params)
         self.assertEqual(
             response.data,
             serializer.data,
@@ -122,8 +98,8 @@ class RecortesAPITests(APITestCase):
         )
 
         params = {'nup': '4040', 'size': '5', 'offset': '15'}
-        serializer = RecortesSerializer(recortes[15:20])
-        response = client.get(url, kwargs=params)
+        serializer = RecortesSerializer(recortes[15:20], many=True)
+        response = client.get(url, params)
         self.assertEqual(
             response.data,
             serializer.data,
