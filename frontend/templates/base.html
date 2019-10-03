@@ -1,0 +1,20 @@
+{% load static %}
+{% load compress %}
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    {% compress css %}
+        <link type="text/x-scss" href="{% static 'bootstrap/scss/bootstrap.scss' %}" rel="stylesheet" media="screen">
+    {% endcompress %}
+</head>
+<body>
+    {% if user.is_authenticated %}
+        
+    {% else %}
+        {% block content %}{% endblock %}
+    {% endif %}
+    {% block js %} 
+        <script src="{% static 'angular/angular.min.js' %}"></script>
+    {% endblock %}
+</body>
+</html>

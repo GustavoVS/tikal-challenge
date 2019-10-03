@@ -48,9 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd apps
     'rest_framework',
+    'compressor',
     # custom apps
     'account',
     'recortes',
+    'frontend',
 ]
 
 MIDDLEWARE = [
@@ -135,8 +137,27 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+STATICFILES_DIRS = ( 
+    os.path.join(BASE_DIR, 'node_modules'),
+)
+
+# https://docs.djangoproject.com/en/2.2/ref/settings/#staticfiles-finders
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder'
+]
 
 # Custom User Model
 
 AUTH_USER_MODEL = 'account.User'
+
+
+# Compress
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
