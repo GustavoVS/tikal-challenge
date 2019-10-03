@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -23,18 +23,24 @@ class RecortesAPITests(APITestCase):
         numbers_recortes = (30, 40, 50)
         for number in numbers_recortes:
             recorte_text = "Content:\n"
-            n = 0
+            n = date_day = 0
+            date_month = 1
             for i in range(0, number):
                 next_mult_ten = i + (10 - i % 10)
                 if next_mult_ten > n:
                     n = next_mult_ten
                     recorte_text += "{}\n".format(str(n)*3)
 
+                date_day += 1
+                if date_day > 20:
+                    date_month += 1
+                    date_day -= 20
+
                 RecortesRecorte.objects.create(
                     data_criacao=datetime.now(),
                     numeracao_unica='{}{}'.format(number, number),
                     recorte=recorte_text,
-                    data_publicacao=datetime.now(),
+                    data_publicacao=date(2000, date_month, date_day),
                     codigo_diario='COD{}'.format(number),
                     novo_recorte=True,
                 )
@@ -146,4 +152,33 @@ class RecortesAPITests(APITestCase):
             response.data,
             serializer.data,
             "Asserting data when search by multiple \"q\" and \"nup\" parameters"
+        )
+
+        # tests for "t" param
+        params = {'t': '55132156'}
+        response = client.get(url, params)
+        self.assertEqual(
+            response.data,
+            status.HTTP_400_BAD_REQUEST,
+            "Asserting error when \"t\" is an invalid date"
+        )
+
+        params = {'t': '13022000'}
+        response = client.get(url, params)
+        filter_t_recortes.filter(data_publicacao='2000-02-13')
+        serializer = RecortesSerializer(filter_t_recortes, many=True)
+        self.assertEqual(
+            response.data,
+            serializer.data,
+            "Asserting data when search by \"t\" parameter"
+        )
+
+        params['q'] = '404040'
+        params['nup'] = '5050'
+        serializer = RecortesSerializer(filter_t_recortes.filter(numeracao_unica='5050', \
+                    recorte__contains='404040'), many=True)
+        self.assertEqual(
+            response.data,
+            serializer.data,
+            "Asserting data when search by \"t\", \"q\" and \"nup\" parameters"
         )
