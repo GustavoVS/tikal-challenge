@@ -122,7 +122,7 @@ class RecortesAPITests(APITestCase):
 
         # tests for "q" param
 
-        recortes = RecortesRecorte.objects.all()
+        recortes = RecortesRecorte.objects.all().order_by('id')
 
         params = {'q': '404040'}
         serializer = RecortesSerializer(recortes.filter(recorte__contains='404040'), many=True)
@@ -158,14 +158,14 @@ class RecortesAPITests(APITestCase):
         params = {'t': '55132156'}
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.status_code,
             status.HTTP_400_BAD_REQUEST,
             "Asserting error when \"t\" is an invalid date"
         )
 
-        params = {'t': '13022000'}
+        params = {'t': '13012000'}
         response = client.get(url, params)
-        filter_t_recortes.filter(data_publicacao='2000-02-13')
+        filter_t_recortes = recortes.filter(data_publicacao='2000-01-13')
         serializer = RecortesSerializer(filter_t_recortes, many=True)
         self.assertEqual(
             response.data,
@@ -173,10 +173,11 @@ class RecortesAPITests(APITestCase):
             "Asserting data when search by \"t\" parameter"
         )
 
-        params['q'] = '404040'
-        params['nup'] = '5050'
-        serializer = RecortesSerializer(filter_t_recortes.filter(numeracao_unica='5050', \
-                    recorte__contains='404040'), many=True)
+        params['q'] = '101010'
+        params['nup'] = '3030'
+        serializer = RecortesSerializer(filter_t_recortes.filter(numeracao_unica='3030', \
+                    recorte__contains='101010'), many=True)
+        response = client.get(url, params)
         self.assertEqual(
             response.data,
             serializer.data,

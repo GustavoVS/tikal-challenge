@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.http import Http404
 from django.db.models import Q
 from functools import reduce
@@ -23,7 +24,13 @@ class RecortesAPIView(ListAPIView):
         if not(nup or q or t):
             raise ParseError('Missing required parameters')
 
-        qs = RecortesRecorte.objects.all()
+        if t:
+            try:
+                t = datetime.strptime(t, '%d%m%Y')
+            except ValueError:
+                raise ParseError("Incorrect date format in \"t\", should be ddmmyyyy")
+
+        qs = RecortesRecorte.objects.all().order_by('id')
 
         if nup:
             qs = qs.filter(numeracao_unica=nup)
@@ -31,6 +38,9 @@ class RecortesAPIView(ListAPIView):
         if q:
             qs = qs.filter(reduce(operator.and_, (Q(recorte__contains = rec) \
                 for rec in q.split('-'))))
+
+        if t:
+            qs = qs.filter(data_publicacao=t)
 
         if not qs:
             raise Http404()
