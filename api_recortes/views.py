@@ -9,11 +9,13 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import RecortesSerializer
 from .models import RecortesRecorte
+from .paginators import RecortesPaginator
 
 
 class RecortesAPIView(ListAPIView):
     serializer_class = RecortesSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = RecortesPaginator
 
     def get_queryset(self):
 
@@ -21,8 +23,8 @@ class RecortesAPIView(ListAPIView):
         q = self.request.query_params.get('q')
         t = self.request.query_params.get('t')
 
-        if not(nup or q or t):
-            raise ParseError('Missing required parameters')
+        # if not(nup or q or t):
+        #     raise ParseError('Missing required parameters')
 
         if t:
             try:
@@ -45,15 +47,16 @@ class RecortesAPIView(ListAPIView):
         if not qs:
             raise Http404()
 
-        size = self.request.query_params.get('size')
-        offset = self.request.query_params.get('offset')
+        # size = self.request.query_params.get('size')
+        # offset = self.request.query_params.get('offset')
 
-        if offset:
-            offset = int(re.sub("\D", "", offset) or 0)
+        # if offset:
+        #     offset = int(re.sub("\D", "", offset) or 0)
 
-        if size:
-            size = int(re.sub("\D", "", size) or 0)
-            if offset:
-                size += offset
+        # if size:
+        #     size = int(re.sub("\D", "", size) or 0)
+        #     if offset:
+        #         size += offset
 
-        return qs[offset:size]
+        # return qs[offset:size]
+        return qs

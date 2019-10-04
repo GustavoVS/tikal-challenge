@@ -63,13 +63,6 @@ class RecortesAPITests(APITestCase):
 
         client.force_authenticate(self.user)
 
-        response = client.get(url, params)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_400_BAD_REQUEST,
-            "Asserting error when request without an obligatory parameter"
-        )
-
         # tests for "nup" parameter
 
         params = {'nup': '2020'}
@@ -87,7 +80,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(recortes, many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"nup\""
         )
@@ -96,7 +89,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(recortes[:10], many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"nup\" with \"size\" parameter"
         )
@@ -105,7 +98,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(recortes[15:], many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"nup\" with \"offset\" parameter"
         )
@@ -114,7 +107,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(recortes[15:20], many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"nup\" with \"size\" and \"offset\" parameters"
         )
@@ -128,7 +121,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(recortes.filter(recorte__contains='404040'), many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"q\" parameter"
         )
@@ -140,7 +133,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(filter_q_recortes, many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by multiple \"q\" parameters"
         )
@@ -149,7 +142,7 @@ class RecortesAPITests(APITestCase):
         serializer = RecortesSerializer(filter_q_recortes.filter(numeracao_unica='5050'), many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by multiple \"q\" and \"nup\" parameters"
         )
@@ -168,7 +161,7 @@ class RecortesAPITests(APITestCase):
         filter_t_recortes = recortes.filter(data_publicacao='2000-01-13')
         serializer = RecortesSerializer(filter_t_recortes, many=True)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"t\" parameter"
         )
@@ -179,7 +172,7 @@ class RecortesAPITests(APITestCase):
                     recorte__contains='101010'), many=True)
         response = client.get(url, params)
         self.assertEqual(
-            response.data,
+            response.data['results'],
             serializer.data,
             "Asserting data when search by \"t\", \"q\" and \"nup\" parameters"
         )
