@@ -12,7 +12,7 @@ class RecortesAPITests(APITestCase):
     multi_db = True
 
     def setUp(self):
-        get_user_model().objects \
+        self.user = get_user_model().objects \
             .create_user(
                 'spiderman',
                 'spider@man.com',
@@ -55,13 +55,13 @@ class RecortesAPITests(APITestCase):
         response = client.get(url, params)
         self.assertEqual(
             response.status_code,
-            status.HTTP_403_FORBIDDEN,
+            status.HTTP_401_UNAUTHORIZED,
             "Asserting user can't request without authentication"
         )
 
         # testing parameters
 
-        client.login(username='spiderman', password='spiderman')
+        client.force_authenticate(self.user)
 
         response = client.get(url, params)
         self.assertEqual(
