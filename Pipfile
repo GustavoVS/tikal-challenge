@@ -17,6 +17,8 @@ django-redis = "*"
 python-memcached = "*"
 django-compressor = "*"
 django-libsass = "*"
+django-rest-auth = {extras = ["with_social"],version = "*"}
+
 
 [requires]
 python_version = "3.6"

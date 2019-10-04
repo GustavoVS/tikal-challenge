@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class RecortesConfig(AppConfig):
-    name = 'recortes'
+    name = 'api_recortes'
