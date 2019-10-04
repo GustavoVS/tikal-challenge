@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from recortes.models import RecortesRecorte
-from recortes.serializers import RecortesSerializer
+from api_recortes.models import RecortesRecorte
+from api_recortes.serializers import RecortesSerializer
 
 
 class RecortesAPITests(APITestCase):

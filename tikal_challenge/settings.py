@@ -46,11 +46,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # 3rd apps
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
     # custom apps
-    'account',
-    'recortes',
+    'api_recortes',
+    'api_recortes.user',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +101,7 @@ DATABASES = {
 DATABASES['recortes_db']['TEST'] = env.db()
 del DATABASES['recortes_db']['TEST']['NAME']
 
-DATABASE_ROUTERS = ['recortes.routers.RecortesRouter']
+DATABASE_ROUTERS = ['api_recortes.routers.RecortesRouter']
 
 
 # Password validation
@@ -139,4 +145,6 @@ STATIC_URL = '/static/'
 
 # Custom User Model
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'user.User'
+
+SITE_ID = 1
