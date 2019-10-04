@@ -10,8 +10,8 @@
         var service = {};
 
         service.Search = Search;
+        service.SearchByUrl = SearchByUrl;
 
-        console.log($http);
         return service;
 
         function Search(filters) {
@@ -25,9 +25,12 @@
                 q_filters.t = $filter('date')(filters.t, 'ddMMyyyy');
 
             return $http.get('/api/recortes/', {params: q_filters})
-                .then(handleSuccess, handleError('Error getting all users'));
+                .then(handleSuccess, handleError('Erro ao buscar recortes'));
         }
         
+        function SearchByUrl (url, error_message) {
+            return $http.get(url, {}).then(handleSuccess, handleError(error_message));
+        }
 
         function handleSuccess(res) {
             return res.data;
@@ -35,7 +38,6 @@
 
         function handleError(error) {
             return function (r) {
-                console.log('erro', r);
                 return { success: false, message: error };
             };
         }

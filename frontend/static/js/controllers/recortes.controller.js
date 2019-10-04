@@ -14,11 +14,14 @@
         vm.filters = {
             'q': '',
             't': '',
-            'nup': ''
+            'nup': '',
+            'size': 50
         };
         vm.searchRecortes = searchRecortes;
         vm.clearFilters = clearFilters;
         vm.logout = logout;
+        vm.nextPage = nextPage;
+        vm.previousPage = previousPage;
 
         initController();
 
@@ -51,6 +54,21 @@
                 AuthenticationService.ClearCredentials();
             });
         }
+
+        function previousPage(){
+            RecortesService.SearchByUrl(vm.recortes.previous, "Erro ao tentar acessar página anterior")
+                .then(function (recortes) {
+                    vm.recortes = recortes;
+            });
+        }
+
+        function nextPage(){
+            RecortesService.SearchByUrl(vm.recortes.next, "Erro ao tentar acessar próxima página")
+                .then(function (recortes) {
+                    vm.recortes = recortes;
+            });
+        }
+
     }
 
 })();
