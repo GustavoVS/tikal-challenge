@@ -38,8 +38,8 @@ class RecortesAPIView(ListAPIView):
             qs = qs.filter(numeracao_unica=nup)
 
         if q:
-            qs = qs.filter(reduce(operator.and_, (Q(recorte__contains = rec) \
-                for rec in q.split('-'))))
+            qs = qs.filter(reduce(operator.and_, (Q(recorte__contains=rec)
+                           for rec in q.split('-'))))
 
         if t:
             qs = qs.filter(data_publicacao=t)

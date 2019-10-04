@@ -12,13 +12,13 @@ class RecortesAPITests(APITestCase):
     multi_db = True
 
     def setUp(self):
-        self.user = get_user_model().objects \
+        self.user = get_user_model() \
+            .objects \
             .create_user(
                 'spiderman',
                 'spider@man.com',
                 'spiderman'
-            )
-
+        )
 
         numbers_recortes = (30, 40, 50)
         for number in numbers_recortes:
@@ -29,7 +29,7 @@ class RecortesAPITests(APITestCase):
                 next_mult_ten = i + (10 - i % 10)
                 if next_mult_ten > n:
                     n = next_mult_ten
-                    recorte_text += "{}\n".format(str(n)*3)
+                    recorte_text += "{}\n".format(str(n) * 3)
 
                 date_day += 1
                 if date_day > 20:
@@ -74,7 +74,7 @@ class RecortesAPITests(APITestCase):
         )
 
         recortes = RecortesRecorte.objects.filter(numeracao_unica='4040') \
-                    .order_by('id')
+                                  .order_by('id')
 
         params = {'nup': '4040'}
         serializer = RecortesSerializer(recortes, many=True)
@@ -112,7 +112,6 @@ class RecortesAPITests(APITestCase):
             "Asserting data when search by \"nup\" with \"size\" and \"offset\" parameters"
         )
 
-
         # tests for "q" param
 
         recortes = RecortesRecorte.objects.all().order_by('id')
@@ -128,7 +127,7 @@ class RecortesAPITests(APITestCase):
 
         params = {'q': '404040-101010'}
         filter_q_recortes = recortes.filter(Q(recorte__contains='404040') &
-                            Q(recorte__contains='101010'))
+                                            Q(recorte__contains='101010'))
 
         serializer = RecortesSerializer(filter_q_recortes, many=True)
         response = client.get(url, params)
@@ -168,8 +167,8 @@ class RecortesAPITests(APITestCase):
 
         params['q'] = '101010'
         params['nup'] = '3030'
-        serializer = RecortesSerializer(filter_t_recortes.filter(numeracao_unica='3030', \
-                    recorte__contains='101010'), many=True)
+        serializer = RecortesSerializer(filter_t_recortes.filter(numeracao_unica='3030',
+                                        recorte__contains='101010'), many=True)
         response = client.get(url, params)
         self.assertEqual(
             response.data['results'],
